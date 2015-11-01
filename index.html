@@ -1,0 +1,80 @@
+<!DOCTYPE>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>WebGL</title>
+	<script src="Vector.js" type="text/javascript"></script>
+	<script src="Matrix.js" type="text/javascript"></script>
+	<script src="TgaLoader.js" type="text/javascript"></script>
+	<script src="ImgLoader.js" type="text/javascript"></script>
+	<script src="Objloader.js" type="text/javascript"></script>
+	<script src="app.js" type="text/javascript"></script>
+	<script type="glsl" id="vertexshader">
+	precision mediump float;
+
+	uniform mat4 u_ModelMatrix;
+	uniform mat4 u_ViewMatrix;
+	uniform mat4 u_ProjectionMatrix;
+	uniform mat4 u_NormalMatrix;
+
+	attribute vec3 a_Position;
+	attribute vec3 a_Normal;
+	attribute vec2 a_Uv;
+
+	varying vec3 v_Normal;
+	varying vec2 v_Uv;
+	varying vec4 v_Position;
+
+	void main(){
+		gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_ModelMatrix * vec4(a_Position, 1.0);
+		v_Normal = (u_NormalMatrix * vec4(a_Normal, 0.0)).xyz;
+		v_Uv = a_Uv;
+		v_Position = u_ViewMatrix * u_ModelMatrix * vec4(a_Position, 1.0);
+	}
+	</script>
+	<script type="glsl" id="fragmentshader">
+	precision mediump float;
+
+	uniform vec3 u_LightAmbient;
+	uniform vec3 u_LightDiffuse;
+	uniform vec3 u_LightSpecular;
+	uniform vec3 u_LightPosition;
+
+	uniform vec3 u_MaterialAmbient;
+	uniform vec3 u_MaterialDiffuse;
+	uniform vec3 u_MaterialSpecular;
+	uniform float u_MaterialShininess;
+
+	uniform float hasTexture;
+	uniform sampler2D texture;
+
+	varying vec3 v_Normal;
+	varying vec2 v_Uv;
+	varying vec4 v_Position;
+
+	void main(){
+
+		vec3 N = normalize(v_Normal);
+		vec3 V = normalize(-v_Position.xyz);
+		vec3 L = normalize(u_LightPosition - v_Position.xyz);
+		vec3 H = normalize(L+V);
+
+		vec4 ambient =  vec4(u_LightAmbient, 1.0) * vec4(u_MaterialAmbient, 1.0);
+
+		vec4 diffuse = max(dot(L, N), 0.0) * vec4(u_LightDiffuse, 1.0) * vec4(u_MaterialDiffuse, 1.0);
+
+		vec4 specular = pow(max(dot(N, H), 0.0), u_MaterialShininess) * vec4(u_LightSpecular, 1.0) * vec4(u_MaterialSpecular, 1.0);
+
+		if(hasTexture > 0.5){
+			vec4 texcolor = texture2D(texture, v_Uv);
+			gl_FragColor = texcolor * (diffuse + ambient) + specular;
+		}else{
+			gl_FragColor = ambient + diffuse + specular;
+		}
+	}
+	</script>
+</head>
+<body>
+	<canvas id="canvas" width="512" height="512"></canvas>
+	<body>
+		</html>
