@@ -268,6 +268,68 @@ class Mat4 {
       return out;
     };
 
+    public static rotateQ (a:Float32Array, rad:number, axis:Float32Array):Float32Array {
+      var out: Float32Array = new Float32Array(16);
+      var Ax, Ay, Az;
+      var len;
+      var x, y, z, w;
+      var a00, a01, a02, a03,
+      a10, a11, a12, a13,
+      a20, a21, a22, a23;
+
+      var R00, R01, R02,
+      R10, R11, R12,
+      R20, R21, R22;
+
+      Ax = axis[0];
+      Ay = axis[1];
+      Az = axis[2];
+      len = Math.sqrt(Ax*Ax+Ay*Ay+Az*Az);
+      len = 1 / len;
+      Ax *= len;
+      Ay *= len;
+      Az *= len;
+
+      w = Math.cos(rad/2);
+      x = Ax*Math.sin(rad/2);
+      y = Ay*Math.sin(rad/2);
+      z = Az*Math.sin(rad/2);
+
+      a00 = a[0]; a01 = a[1]; a02 = a[2]; a03 = a[3];
+      a10 = a[4]; a11 = a[5]; a12 = a[6]; a13 = a[7];
+      a20 = a[8]; a21 = a[9]; a22 = a[10]; a23 = a[11];
+
+      R00 = 1 - 2*y*y - 2*z*z;
+      R01 = 2*x*y - 2*w*z;
+      R02 = 2*x*z + 2*w*y;
+      R10 = 2*x*y + 2*w*z;
+      R11 = 1 - 2*x*x - 2*z*z;
+      R12 = 2*y*z - 2*w*x;
+      R20 = 2*x*z - 2*w*y;
+      R21 = 2*y*z + 2*w*x;
+      R22 = 1 - 2*x*x - 2*y*y;
+
+      out[0] = a00 * R00 + a10 * R01 + a20 * R02;
+      out[1] = a01 * R00 + a11 * R01 + a21 * R02;
+      out[2] = a02 * R00 + a12 * R01 + a22 * R02;
+      out[3] = a03 * R00 + a13 * R01 + a23 * R02;
+      out[4] = a00 * R10 + a10 * R11 + a20 * R12;
+      out[5] = a01 * R10 + a11 * R11 + a21 * R12;
+      out[6] = a02 * R10 + a12 * R11 + a22 * R12;
+      out[7] = a03 * R10 + a13 * R11 + a23 * R12;
+      out[8] = a00 * R20 + a10 * R21 + a20 * R22;
+      out[9] = a01 * R20 + a11 * R21 + a21 * R22;
+      out[10] = a02 * R20 + a12 * R21 + a22 * R22;
+      out[11] = a03 * R20 + a13 * R21 + a23 * R22;
+
+      out[12] = a[12];
+      out[13] = a[13];
+      out[14] = a[14];
+      out[15] = a[15];
+
+      return out;
+    };
+
     public static scale(a: Float32Array, v: Float32Array) {
       var x = v[0], y = v[1], z = v[2];
       var out: Float32Array = new Float32Array(16);

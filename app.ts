@@ -132,7 +132,7 @@ var drawFrame = function(){
   var model_mat = Mat4.createIdentity();
   model_mat = Mat4.scale(model_mat, new Float32Array([0.5, 0.5, 0.5]));
   model_mat = Mat4.translate(model_mat, new Float32Array([0, -7, 0]));
-  model_mat = Mat4.rotate(model_mat, frame * 0.01, new Float32Array([0, 1, 0]));
+  model_mat = Mat4.rotateQ(model_mat, frame * 0.01, new Float32Array([0, 1, 0]));
 
   var view_mat = Mat4.createIdentity();
   view_mat = Mat4.lookAt([0, 0, 15], [0, 0, -1], [0, 1, 0]);
